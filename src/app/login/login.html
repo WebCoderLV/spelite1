@@ -1,0 +1,28 @@
+<div class="container">
+  <h2>Please log in</h2>
+  <form [formGroup]="loginForm">
+    <label>
+      Username:
+      <input formControlName="username" type="text" />
+    </label>
+    <label>
+      Password:
+      <input formControlName="password" type="password" />
+    </label>
+    <!-- @if(loginForm.get('username')?.touched && !loginForm.get('username')?.invalid && -->
+    <!-- loginForm.get('password')?.touched && !loginForm.get('password')?.invalid) { -->
+    <div class="row klase text-end align-items-end">
+      <div class="col-sm-4">
+        <button class="btn btn-primary p-3" type="button" (click)="onSubmit()">Log in</button>
+      </div>
+      <div class="col-sm-4">
+        <button class="btn btn-success p-3" type="button" (click)="onSignUp()">Sign up</button>
+      </div>
+      <div class="col-sm-4">
+        <button class="btn btn-danger p-3" type="button" (click)="onSignUp()">Trešā poga</button>
+      </div>
+    </div>
+    <!-- } -->
+  </form>
+  <p>{{ loginForm.status }}</p>
+</div>
