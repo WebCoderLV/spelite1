@@ -2,11 +2,19 @@ import { Component, inject } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
+  FormControl,
+  FormGroup,
   ReactiveFormsModule,
   ValidationErrors,
   Validators,
 } from '@angular/forms';
 import { UserInterface } from '../models/user-interface';
+
+// Type-safe form interface
+interface LoginFormValue {
+  username: string;
+  password: string;
+}
 
 @Component({
   selector: 'app-login',
@@ -17,27 +25,40 @@ import { UserInterface } from '../models/user-interface';
 export class Login {
   fb = inject(FormBuilder);
 
-  formValidators = (controles: AbstractControl): ValidationErrors | null => {
-    const value = controles.value;
-
-    if (!value) {
-      return null;
-    }
-
+  passwordValidator = (control: AbstractControl): ValidationErrors => {
+    const value = control.value;
     let errors: ValidationErrors = {};
 
-    if (/^[A-Z]/.test(value)) {
-      errors['upperCase'] = {
-        message: 'Field must start with an uppercase letter',
+    if (!value) {
+      return errors;
+    }
+    if (value.length < 4 || value.length > 8) {
+      errors['length'] = {
+        message: 'Password must be 4 to 8 characters long',
+      };
+    }
+    // Check for at least one special character
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(value)) {
+      errors['specialChar'] = {
+        message: 'Password must contain at least one special character',
+      };
+    }
+    // Check for at least one capital letter, but not the first character
+    if (!/^.+[A-Z]/.test(value) || /^[A-Z]/.test(value)) {
+      errors['capitalLetter'] = {
+        message: 'Password must contain one capital letter, but not as the first character',
       };
     }
 
-    return Object.keys(errors).length ? errors : null;
+    return errors;
   };
 
-  loginForm = this.fb.group({
-    username: ['', [Validators.required, Validators.minLength(2), this.formValidators]],
-    password: ['', [Validators.required]],
+  loginForm: FormGroup = this.fb.group({
+    username: [
+      '',
+      [Validators.required, Validators.minLength(2), Validators.pattern('^[A-Z]\\S*$')],
+    ],
+    password: ['', [Validators.required, this.passwordValidator]],
   });
 
   user: UserInterface = {
@@ -46,11 +67,8 @@ export class Login {
   };
 
   onSubmit() {
-    console.log('Form Submitted', this.loginForm);
-    this.user = {
-      username: this.loginForm.value.username || '',
-      password: this.loginForm.value.password || '',
-    };
+    const rawValue = this.loginForm.getRawValue();
+    this.user = { ...rawValue };
   }
 
   onSignUp() {

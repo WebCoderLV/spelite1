@@ -1,28 +1,113 @@
 <div class="container">
-  <h2>Please log in</h2>
-  <form [formGroup]="loginForm">
-    <label>
-      Username:
-      <input formControlName="username" type="text" />
-    </label>
-    <label>
-      Password:
-      <input formControlName="password" type="password" />
-    </label>
-    <!-- @if(loginForm.get('username')?.touched && !loginForm.get('username')?.invalid && -->
-    <!-- loginForm.get('password')?.touched && !loginForm.get('password')?.invalid) { -->
-    <div class="row klase text-end align-items-end">
-      <div class="col-sm-4">
-        <button class="btn btn-primary p-3" type="button" (click)="onSubmit()">Log in</button>
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="text-center mb-4">
+        <h2 class="fw-bold text-primary">Please log in</h2>
       </div>
-      <div class="col-sm-4">
-        <button class="btn btn-success p-3" type="button" (click)="onSignUp()">Sign up</button>
-      </div>
-      <div class="col-sm-4">
-        <button class="btn btn-danger p-3" type="button" (click)="onSignUp()">Trešā poga</button>
-      </div>
+
+      <form [formGroup]="loginForm">
+        <!-- Form Fields Row -->
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="username" class="form-label">Username:</label>
+            <input formControlName="username" type="text" class="form-control" id="username" />
+            @if (loginForm.get('username')?.invalid && loginForm.get('username')?.touched) {
+            <div class="invalid-feedback d-block">
+              @if (loginForm.get('username')?.errors?.['required']) {
+              <small class="text-danger">Username is required</small>
+              } @if (loginForm.get('username')?.errors?.['minlength']) {
+              <small class="text-danger">Username must be at least 2 characters</small>
+              } @if (loginForm.get('username')?.errors?.['pattern']) {
+              <small class="text-danger"
+                >Username must start with a capital letter and contain no spaces</small
+              >
+              }
+            </div>
+            }
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="password" class="form-label">Password:</label>
+            <input formControlName="password" type="password" class="form-control" id="password" />
+            @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+            <div class="invalid-feedback d-block">
+              @if (loginForm.get('password')?.errors?.['required']) {
+              <small class="text-danger">Password is required</small>
+              } @if (loginForm.get('password')?.errors?.['length']) {
+              <small
+                class="text-danger"
+                >{{ loginForm.get('password')?.errors?.['length']?.message }}</small
+              >
+              } @if (loginForm.get('password')?.errors?.['specialChar']) {
+              <small
+                class="text-danger"
+                >{{ loginForm.get('password')?.errors?.['specialChar']?.message }}</small
+              >
+              } @if (loginForm.get('password')?.errors?.['capitalLetter']) {
+              <small
+                class="text-danger"
+                >{{ loginForm.get('password')?.errors?.['capitalLetter']?.message }}</small
+              >
+              }
+            </div>
+            }
+          </div>
+        </div>
+
+        <!-- Requirements Row -->
+        <div class="row row-cols-1 row-cols-md-2">
+          <div class="col mb-3">
+            <div
+              class="alert alert-success border-start border-success border-4 h-100 d-flex flex-column"
+            >
+              <div class="fw-bold mb-2 text-success-emphasis">Username Requirements:</div>
+              <ul class="mb-0 ps-3 small text-muted flex-grow-1">
+                <li>Must be at least 2 characters long</li>
+                <li>Must start with a capital letter</li>
+                <li>Cannot contain spaces or whitespace characters</li>
+              </ul>
+            </div>
+          </div>
+          <div class="col mb-3">
+            <div
+              class="alert alert-info border-start border-info border-4 h-100 d-flex flex-column"
+            >
+              <div class="fw-bold mb-2 text-info-emphasis">Password Requirements:</div>
+              <ul class="mb-0 ps-3 small text-muted flex-grow-1">
+                <li>Must be 4 to 8 characters long</li>
+                <li>Must contain at least one special character</li>
+                <li>Must contain one capital letter, but not as the first character</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Buttons Row -->
+        <div class="row justify-content-center align-items-end">
+          <div class="col-md-6 mb-3">
+            <button
+              class="btn btn-primary w-100 py-3"
+              type="button"
+              (click)="onSubmit()"
+              [disabled]="loginForm.invalid"
+            >
+              Log in
+            </button>
+          </div>
+          <div class="col-md-6 mb-3">
+            <p class="text-muted small mb-2 text-center">Don't have an account?</p>
+            <button class="btn btn-outline-success w-100 py-3" type="button" (click)="onSignUp()">
+              Sign up
+            </button>
+          </div>
+        </div>
+
+        <!-- Debug Info -->
+        <div class="row justify-content-center mt-3">
+          <div class="col-12 text-center">
+            <small class="text-muted">Form Status: {{ loginForm.status }}</small>
+          </div>
+        </div>
+      </form>
     </div>
-    <!-- } -->
-  </form>
-  <p>{{ loginForm.status }}</p>
+  </div>
 </div>

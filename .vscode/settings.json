@@ -1,0 +1,40 @@
+{
+  // Use Angular Language Service for HTML formatting
+  "[html]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "Angular.ng-template"
+  },
+  
+  // Use Prettier for other files
+  "[typescript]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  
+  "[javascript]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  
+  "[json]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  
+  // Enable formatting globally
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  
+  // General editor settings
+  "editor.insertSpaces": true,
+  "editor.tabSize": 2,
+  "editor.detectIndentation": false,
+  
+  // Angular Language Service settings
+  "angular.enable-strict-mode-prompt": false,
+  
+  // File associations for Angular templates
+  "files.associations": {
+    "*.html": "html"
+  }
+}
