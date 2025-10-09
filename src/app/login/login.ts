@@ -2,11 +2,10 @@ import { Component, inject } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
-  FormControl,
   FormGroup,
   ReactiveFormsModule,
   ValidationErrors,
-  Validators,
+  Validators
 } from '@angular/forms';
 import { UserInterface } from '../models/user-interface';
 
@@ -54,10 +53,7 @@ export class Login {
   };
 
   loginForm: FormGroup = this.fb.group({
-    username: [
-      '',
-      [Validators.required, Validators.minLength(2), Validators.pattern('^[A-Z]\\S*$')],
-    ],
+    username: ['', [Validators.required, Validators.minLength(2), Validators.pattern('^[A-Z]\\S*$')]],
     password: ['', [Validators.required, this.passwordValidator]],
   });
 
