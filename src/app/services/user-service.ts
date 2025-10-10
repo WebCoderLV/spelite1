@@ -1,6 +1,6 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable } from '@angular/core';
+import { AbstractControl, AsyncValidatorFn, ValidationErrors } from '@angular/forms';
 import { DUMMY_USERS } from '../DUMMY_USER/dummy-data';
-import { UserInterface } from '../models/user-interface';
 
 @Injectable({
   providedIn: 'root'
@@ -13,70 +13,44 @@ export class UserService {
     });
   }
 
-  // Signal for loading state
-  private isLoading = signal(false);
-
-  // Signal for current user
-  private currentUser = signal<UserInterface | null>(null);
-
-  // Signal for validation result
-  private validationResult = signal<boolean | null>(null);
-
-  // Public readonly signals
-  readonly loading = this.isLoading.asReadonly();
-  readonly user = this.currentUser.asReadonly();
-  readonly isValid = this.validationResult.asReadonly();
-
-
-  async getUserByUsername(username: string): Promise<UserInterface | undefined> {
-    this.isLoading.set(true);
-    await this.simulateDelay();
-
-    const user = DUMMY_USERS.find(user => user.username === username);
-    this.currentUser.set(user || null);
-
-    this.isLoading.set(false);
-    return user;
+  // Async validator to check if user exists in dummy data
+  validateUserExists(): AsyncValidatorFn {
+    return async (control: AbstractControl) => {
+      if (!control.value) {
+        return null;
+      }
+      await this.simulateDelay();
+      const user = DUMMY_USERS.find(u => u.username === control.value);
+      return user ? null : { userNotFound: { message: 'User not found in database. Please sign up!' } };
+    };
   }
+  //Sync Password validator function
+  passwordValidator = (control: AbstractControl): ValidationErrors => {
+    const value = control.value;
+    let errors: ValidationErrors = {};
 
-  async validateUser(username: string): Promise<boolean> {
-    this.isLoading.set(true);
-    await this.simulateDelay();
+    if (!value) {
+      return errors;
+    }
+    if (value.length < 4 || value.length > 8) {
+      errors['length'] = {
+        message: 'Password must be 4 to 8 characters long. ',
+      };
+    }
+    // Check for at least one special character
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(value)) {
+      errors['specialChar'] = {
+        message: 'Password must contain at least one special character. ',
+      };
+    }
+    // Check for at least one capital letter, but not the first character
+    if (!/^.+[A-Z]/.test(value) || /^[A-Z]/.test(value)) {
+      errors['capitalLetter'] = {
+        message: 'Password must contain one capital letter, but not as the first character.',
+      };
+    }
 
-    const user = DUMMY_USERS.find(u => u.username === username);
-    const isValid = !!user;
-    this.validationResult.set(isValid);
-
-    this.isLoading.set(false);
-    return isValid;
-  }
-
-  // Async validator method that returns proper format for Angular forms
-  async validateUserExists(username: string): Promise<{ [key: string]: any } | null> {
-    const userExists = await this.validateUser(username);
-    return userExists ? null : { userNotFound: { message: 'User not found in system' } };
-  }
-
-  async loginUser(username: string, password: string): Promise<UserInterface | null> {
-    this.isLoading.set(true);
-    await this.simulateDelay();
-
-    const user = DUMMY_USERS.find(u => u.username === username && u.password === password);
-    this.currentUser.set(user || null);
-    this.validationResult.set(!!user);
-
-    this.isLoading.set(false);
-    return user || null;
-  }
-
-  // Method to logout user
-  logoutUser(): void {
-    this.currentUser.set(null);
-    this.validationResult.set(null);
-  }
-
-  clearValidation(): void {
-    this.validationResult.set(null);
-  }
+    return errors;
+  };
 
 }
