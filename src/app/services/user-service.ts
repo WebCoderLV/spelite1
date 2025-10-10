@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AbstractControl, AsyncValidatorFn, ValidationErrors } from '@angular/forms';
 import { DUMMY_USERS } from '../DUMMY_USER/dummy-data';
+import { UserInterface } from '../models/user-interface';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +22,7 @@ export class UserService {
       }
       await this.simulateDelay();
       const user = DUMMY_USERS.find(u => u.username === control.value);
-      return user ? null : { userNotFound: { message: 'User not found in database. Please sign up!' } };
+      return user ? null : { userNotFound: { status: true } };
     };
   }
   //Sync Password validator function
@@ -52,5 +53,34 @@ export class UserService {
 
     return errors;
   };
+
+  async onSignUp(username: string, password: string): Promise<{ success: boolean; message: string; }> {
+    await this.simulateDelay();
+
+    // Check if user already exists
+    const existingUser = DUMMY_USERS.find(u => u.username === username);
+    if (existingUser) {
+      return {
+        success: false,
+        message: 'Username already exists. Please choose a different username.'
+      };
+    }
+
+    // Generate new ID (get the highest ID and add 1)
+    const maxId = DUMMY_USERS.length > 0 ? Math.max(...DUMMY_USERS.map(u => u.id || 0)) : 0;
+    const newUser: UserInterface = {
+      id: maxId + 1,
+      username: username,
+      password: password
+    };
+
+    // Add new user to DUMMY_USERS array
+    DUMMY_USERS.push(newUser);
+
+    return {
+      success: true,
+      message: 'User registered successfully!',
+    };
+  }
 
 }

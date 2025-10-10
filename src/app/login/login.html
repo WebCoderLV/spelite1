@@ -37,11 +37,13 @@
               <small class="text-white bg-dark"
                 >Username must start with a capital letter and contain no spaces</small
               >
-              } @if (loginForm.get('username')?.errors?.['userNotFound']) {
+              }
+              <!-- @if (loginForm.get('username')?.errors?.['userNotFound']) {
               <small class="text-white bg-dark">
-                ⚠️ {{ loginForm.get('username')?.errors?.['userNotFound']?.message }}
+                {{ loginForm.get('username')?.errors?.['userNotFound']?.message }}
               </small>
-              } } @if (loginForm.get('username')?.pending) {
+              }  -->
+              } @if (loginForm.get('username')?.pending) {
               <small class="text-white bg-dark">
                 <span class="spinner-border spinner-border-sm me-1" role="status"></span>
                 Checking user...
@@ -111,6 +113,20 @@
             </div>
           </div>
 
+          <!-- Sign Up Result Message -->
+          @if (signUpResult().message) {
+          <div class="row mb-3">
+            <div class="col-12">
+              <div
+                class="alert"
+                [class]="signUpResult().success ? 'alert-success' : 'alert-danger'"
+              >
+                {{ signUpResult().message }}
+              </div>
+            </div>
+          </div>
+          }
+
           <!-- Buttons Row -->
           <div class="row justify-content-center align-items-end">
             <div class="col-md-6 mb-3">
@@ -118,7 +134,7 @@
                 class="btn btn-primary w-100 py-3"
                 type="button"
                 (click)="onLogIn()"
-                [disabled]="loginForm.invalid"
+                [disabled]="!isLoginEnabled()"
               >
                 Log in
               </button>
@@ -129,7 +145,7 @@
                 class="btn btn-success w-100 py-3"
                 type="button"
                 (click)="onSignUp()"
-                [disabled]="loginForm.invalid"
+                [disabled]="!isSignUpEnabled()"
               >
                 Sign up
               </button>
