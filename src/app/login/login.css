@@ -1,9 +1,5 @@
-.klase {
-  height: 400px;
-  background: bisque;
+.btn {
+    color: white;
+    border-color: white;
 }
 
-.btn-danger {
-  background-color: #dbecbb;
-  color: #290404;
-}
