@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import {
   AbstractControl,
+  AsyncValidatorFn,
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
@@ -8,12 +9,7 @@ import {
   Validators
 } from '@angular/forms';
 import { UserInterface } from '../models/user-interface';
-
-// Type-safe form interface
-interface LoginFormValue {
-  username: string;
-  password: string;
-}
+import { UserService } from '../services/user-service';
 
 @Component({
   selector: 'app-login',
@@ -23,6 +19,21 @@ interface LoginFormValue {
 })
 export class Login {
   fb = inject(FormBuilder);
+  userService = inject(UserService);
+  user: UserInterface = {
+    username: '',
+    password: '',
+  };
+
+  // Async validator to check if user exists in dummy data
+  userExistsValidator(): AsyncValidatorFn {
+    return (control: AbstractControl) => {
+      if (!control.value) {
+        return Promise.resolve(null);
+      }
+      return this.userService.validateUserExists(control.value);
+    };
+  }
 
   passwordValidator = (control: AbstractControl): ValidationErrors => {
     const value = control.value;
@@ -33,19 +44,19 @@ export class Login {
     }
     if (value.length < 4 || value.length > 8) {
       errors['length'] = {
-        message: 'Password must be 4 to 8 characters long',
+        message: 'Password must be 4 to 8 characters long. ',
       };
     }
     // Check for at least one special character
     if (!/[!@#$%^&*(),.?":{}|<>]/.test(value)) {
       errors['specialChar'] = {
-        message: 'Password must contain at least one special character',
+        message: 'Password must contain at least one special character. ',
       };
     }
     // Check for at least one capital letter, but not the first character
     if (!/^.+[A-Z]/.test(value) || /^[A-Z]/.test(value)) {
       errors['capitalLetter'] = {
-        message: 'Password must contain one capital letter, but not as the first character',
+        message: 'Password must contain one capital letter, but not as the first character.',
       };
     }
 
@@ -53,21 +64,23 @@ export class Login {
   };
 
   loginForm: FormGroup = this.fb.group({
-    username: ['', [Validators.required, Validators.minLength(2), Validators.pattern('^[A-Z]\\S*$')]],
+    username: ['',
+      [Validators.required, Validators.minLength(2), Validators.pattern('^[A-Z]\\S*$')],
+      [this.userExistsValidator()],
+      { updateOn: 'blur' }  // Validate on blur to reduce API calls
+    ],
     password: ['', [Validators.required, this.passwordValidator]],
   });
 
-  user: UserInterface = {
-    username: '',
-    password: '',
-  };
-
-  onSubmit() {
+  onLogIn() {
     const rawValue = this.loginForm.getRawValue();
     this.user = { ...rawValue };
+    console.log('Login attempt with:', this.user);
   }
 
   onSignUp() {
     console.log('Sign Up clicked');
   }
+
+
 }
