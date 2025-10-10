@@ -30,9 +30,6 @@ export class Login {
     message: ''
   });
 
-  formValid = signal<boolean>(false);
-  userExists = signal<boolean | null>(null);
-
   loginForm: FormGroup = this.fb.group({
     username: ['',
       {
@@ -48,34 +45,12 @@ export class Login {
   formStatus = toSignal(this.loginForm.statusChanges, { initialValue: this.loginForm.status });
   formValue = toSignal(this.loginForm.valueChanges, { initialValue: this.loginForm.value });
 
-  // Computed signals for button states
-  isSignUpEnabled = computed(() => {
-    return this.formValid() && this.userExists() === false && !this.signUpResult().success;
-  });
+  // Computed signals that automatically react to form changes
+  formValid = computed(() => {
+    // This will automatically react when formStatus() or formValue() changes
+    this.formStatus(); // Access the signal to create dependency
+    this.formValue();
 
-  isLoginEnabled = computed(() => {
-    return this.formValid() && (this.userExists() === true || this.signUpResult().success);
-  });
-
-  constructor() {
-    // Use effects to reactively update form state when signals change
-    effect(() => {
-      // React to form status changes
-      this.formStatus();
-      this.updateFormState();
-    });
-
-    effect(() => {
-      // React to form value changes  
-      this.formValue();
-      this.updateFormState();
-    });
-
-    // Initial form state update
-    this.updateFormState();
-  }
-
-  private updateFormState() {
     const usernameControl = this.loginForm.get('username');
     const passwordControl = this.loginForm.get('password');
     const isUsernameValid = usernameControl?.hasError('required') === false &&
@@ -83,17 +58,37 @@ export class Login {
       usernameControl?.hasError('pattern') === false;
     const isPasswordValid = passwordControl?.valid === true;
 
-    this.formValid.set(isUsernameValid && isPasswordValid);
+    return isUsernameValid && isPasswordValid;
+  });
+
+  userExists = computed(() => {
+    // This will automatically react when formStatus() or formValue() changes
+    this.formStatus();
+    this.formValue();
+
+    const usernameControl = this.loginForm.get('username');
+    const isUsernameValid = usernameControl?.hasError('required') === false &&
+      usernameControl?.hasError('minlength') === false &&
+      usernameControl?.hasError('pattern') === false;
+
     if (usernameControl?.pending) {
-      this.userExists.set(null);
+      return null;
     } else if (usernameControl?.errors?.['userNotFound']) {
-      this.userExists.set(false);
+      return false;
     } else if (isUsernameValid && usernameControl?.value) {
-      this.userExists.set(true);
+      return true;
     } else {
-      this.userExists.set(null);
+      return null;
     }
-  }
+  });
+
+  isSignUpEnabled = computed(() => {
+    return this.formValid() && this.userExists() === false && !this.signUpResult().success;
+  });
+
+  isLoginEnabled = computed(() => {
+    return this.formValid() && (this.userExists() === true || this.signUpResult().success);
+  });
 
   onLogIn() {
     const rawValue = this.loginForm.getRawValue();
@@ -105,13 +100,5 @@ export class Login {
     const rawValue = this.loginForm.getRawValue();
     const result = await this.userService.onSignUp(rawValue.username, rawValue.password);
     this.signUpResult.set(result);
-
-    if (this.signUpResult().success) {
-      console.log('Sign Up Success:', this.signUpResult().message);
-      // Update form state to reflect that user now exists
-      this.userExists.set(true);
-    } else {
-      console.log('Sign Up Failed:', this.signUpResult().message);
-    }
   }
 }
