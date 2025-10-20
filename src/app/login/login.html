@@ -37,13 +37,7 @@
               <small class="text-white bg-dark"
                 >Username must start with a capital letter and contain no spaces</small
               >
-              }
-              <!-- @if (loginForm.get('username')?.errors?.['userNotFound']) {
-              <small class="text-white bg-dark">
-                {{ loginForm.get('username')?.errors?.['userNotFound']?.message }}
-              </small>
-              }  -->
-              } @if (loginForm.get('username')?.pending) {
+              } } @if (loginForm.get('username')?.pending) {
               <small class="text-white bg-dark">
                 <span class="spinner-border spinner-border-sm me-1" role="status"></span>
                 Checking user...
@@ -100,10 +94,10 @@
             </div>
             <div class="col mb-3">
               <div
-                class="alert alert-info border-start border-info border-4 h-100 d-flex flex-column"
+                class="alert alert-warning border-start border-warning border-4 h-100 d-flex flex-column"
               >
-                <div class="spinner-grow text-info"></div>
-                <div class="fw-bold mb-2 text-info-emphasis">Password Requirements:</div>
+                <div class="spinner-grow text-warning"></div>
+                <div class="fw-bold mb-2 text-warning-emphasis">Password Requirements:</div>
                 <ol class="mb-0 ps-3 small text-muted flex-grow-1">
                   <li>Must be 4 to 8 characters long</li>
                   <li>Must contain at least one special character</li>

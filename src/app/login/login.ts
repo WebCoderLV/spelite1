@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, effect } from '@angular/core';
+import { Component, inject, signal, computed, effect, OnInit } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import {
   FormBuilder,
@@ -15,7 +15,7 @@ import { UserService } from '../services/user-service';
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
-export class Login {
+export class Login implements OnInit {
   fb = inject(FormBuilder);
   userService = inject(UserService);
 
@@ -25,10 +25,14 @@ export class Login {
     password: '',
   });
 
-  signUpResult = signal<{ success: boolean; message: string }>({
-    success: false,
-    message: ''
-  });
+  signUpResult = signal<{ success: boolean; message: string }>({ success: false, message: '' });
+
+  ngOnInit() { }
+
+  // No formas vārdiņš.
+  // ielikt vārdiņu metodē, kas izsauc servisu
+  // subscribe dabūt rezultātu.
+  // Rezultātu es ielieku signālā
 
   loginForm: FormGroup = this.fb.group({
     username: ['',
@@ -49,7 +53,7 @@ export class Login {
   formValid = computed(() => {
     // This will automatically react when formStatus() or formValue() changes
     this.formStatus(); // Access the signal to create dependency
-    this.formValue();
+    this.formValue(); // Access the signal to create dependency
 
     const usernameControl = this.loginForm.get('username');
     const passwordControl = this.loginForm.get('password');
