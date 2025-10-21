@@ -15,14 +15,14 @@ export class Login {
     password: '',
   });
 
-  protected readonly loginForm = form(this.user, (path) => {
-    required(path.username, { message: 'Username is required' });
-    minLength(path.username, 3, { message: 'Username must be at least 3 characters' });
-    maxLength(path.username, 25, { message: 'Username cannot exceed 25 characters' });
+  protected readonly loginForm = form(this.user, (p) => {
+    required(p.username, { message: 'Username is required' });
+    minLength(p.username, 3, { message: 'Username must be at least 3 characters' });
+    maxLength(p.username, 25, { message: 'Username cannot exceed 25 characters' });
 
-    required(path.password, { message: 'Password is required' });
-    minLength(path.password, 4, { message: 'Password must be at least 4 characters' });
-    maxLength(path.password, 50, { message: 'Password cannot exceed 50 characters' });
+    required(p.password, { message: 'Password is required' });
+    minLength(p.password, 4, { message: 'Password must be at least 4 characters' });
+    maxLength(p.password, 50, { message: 'Password cannot exceed 50 characters' });
   });
 
   onLogIn() {

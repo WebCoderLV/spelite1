@@ -29,7 +29,7 @@
                   "
                 />
                 @if(loginForm.username().touched() && loginForm.username().invalid()) { @for(error
-                of loginForm.username().errors(); track error){
+                of loginForm.username().errors(); track $index){
                 <div class="invalid-feedback d-block">
                   {{ error.message }}
                 </div>
@@ -49,7 +49,7 @@
                   "
                 />
                 @if(loginForm.password().touched() && loginForm.password().invalid()) { @for(error
-                of loginForm.password().errors(); track error){
+                of loginForm.password().errors(); track $index){
                 <div class="invalid-feedback d-block">
                   {{ error.message }}
                 </div>
