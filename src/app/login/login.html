@@ -24,8 +24,8 @@
                 type="text"
                 placeholder="Enter name"
               />
-              @if(loginForm.name().touched() && loginForm.name().invalid()) { @for(error of
-              loginForm.name().errors(); track $index){
+              @if((loginForm.name().touched() && loginForm.name().dirty()) &&
+              loginForm.name().invalid()) { @for(error of loginForm.name().errors(); track $index){
               <div class="invalid-feedback d-block">
                 {{ error.message }}
               </div>
@@ -40,8 +40,9 @@
                 type="password"
                 placeholder="Enter password"
               />
-              @if(loginForm.password().touched() && loginForm.password().invalid()) { @for(error of
-              loginForm.password().errors(); track $index){
+              @if((loginForm.password().touched() && loginForm.password().dirty()) &&
+              loginForm.password().invalid()) { @for(error of loginForm.password().errors(); track
+              $index){
               <div class="invalid-feedback d-block">
                 {{ error.message }}
               </div>
@@ -58,8 +59,8 @@
                 Let's play!
               </button>
 
-              @if(!loginForm().valid() && (loginForm.name().touched() ||
-              loginForm.password().touched())) {
+              @if(!loginForm().valid() && loginForm.name().touched() &&
+              loginForm.password().touched()) {
               <small class="text-danger text-center">
                 Please fix the errors above before submitting!
               </small>
