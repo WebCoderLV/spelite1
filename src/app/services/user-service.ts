@@ -10,7 +10,7 @@ export class UserService {
   private http: HttpClient = inject(HttpClient);
 
   public getUserByName(username: string) {
-    return this.http.get<{ found: boolean, httpStatus: string }>(`http://localhost:8080/api/v1/users/${username}`);
+    return this.http.get<{ found: boolean, httpStatus: string }>(`http://localhost:8080/api/v1/user/${username}`);
   }
 
   public validateUserExists(): AsyncValidatorFn {

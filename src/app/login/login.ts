@@ -13,7 +13,7 @@ import { UserService } from '../services/user-service';
   selector: 'app-login',
   imports: [ReactiveFormsModule],
   templateUrl: './login.html',
-  styleUrl: './login.css',
+  styleUrls: ['./login.css']
 })
 export class Login implements OnInit {
   fb = inject(FormBuilder);
@@ -27,7 +27,19 @@ export class Login implements OnInit {
 
   signUpResult = signal<{ success: boolean; message: string }>({ success: false, message: '' });
 
-  ngOnInit() { }
+  ngOnInit() {
+    this.userService.getUserByName('Arturs').subscribe({
+      next: (data) => {
+        console.log('Data from backend: ', data);
+        this.signUpResult.set({ success: data.found, message: '' });
+      },
+      error: (error) => {
+        console.error('Error fetching user data: ', error);
+        this.signUpResult.set({ success: false, message: 'User not found' });
+      }
+    });
+    console.log('User exists: ', this.signUpResult());
+  }
 
   // No formas vārdiņš.
   // ielikt vārdiņu metodē, kas izsauc servisu
@@ -66,25 +78,30 @@ export class Login implements OnInit {
   });
 
   userExists = computed(() => {
-    // This will automatically react when formStatus() or formValue() changes
-    this.formStatus();
-    this.formValue();
+    if (this.formValid()) {
+      const name = this.loginForm.get('username');
 
-    const usernameControl = this.loginForm.get('username');
-    const isUsernameValid = usernameControl?.hasError('required') === false &&
-      usernameControl?.hasError('minlength') === false &&
-      usernameControl?.hasError('pattern') === false;
 
-    if (usernameControl?.pending) {
-      return null;
-    } else if (usernameControl?.errors?.['userNotFound']) {
-      return false;
-    } else if (isUsernameValid && usernameControl?.value) {
-      return true;
-    } else {
-      return null;
-    }
-  });
+      // This will automatically react when formStatus() or formValue() changes
+      // this.formStatus();
+      // this.formValue();
+
+      // const usernameControl = this.loginForm.get('username');
+      // const isUsernameValid = usernameControl?.hasError('required') === false &&
+      //   usernameControl?.hasError('minlength') === false &&
+      //   usernameControl?.hasError('pattern') === false;
+
+      // if (usernameControl?.pending) {
+      //   return null;
+      // } else if (usernameControl?.errors?.['userNotFound']) {
+      //   return false;
+      // } else if (isUsernameValid && usernameControl?.value) {
+      //   return true;
+
+      // } else {
+      //   return null;
+      // }
+    });
 
   isSignUpEnabled = computed(() => {
     return this.formValid() && this.userExists() === false && !this.signUpResult().success;
@@ -103,6 +120,6 @@ export class Login implements OnInit {
   async onSignUp() {
     const rawValue = this.loginForm.getRawValue();
     const result = await this.userService.onSignUp(rawValue.username, rawValue.password);
-    this.signUpResult.set(result);
+    // this.signUpResult.set(result);
   }
 }
