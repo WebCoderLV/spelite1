@@ -32,7 +32,8 @@ export class Login {
     if (this.loginForm().valid()) {
       this.userService.logIn(this.user()).subscribe({
         next: (response) => {
-          console.log('User found:', response.body, response.status);
+          this.user.update(() => ({ ...this.user(), id: response.body! }));
+          console.log("User " + JSON.stringify(this.user()) + " Status: " + response.status);
         },
         error: (error) => {
           console.error('Error fetching user:', error);
