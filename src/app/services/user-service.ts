@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { UserInterface } from '../models/user-interface';
@@ -11,8 +11,8 @@ export class UserService {
 
   private http: HttpClient = inject(HttpClient);
 
-  logIn(userData: UserInterface): Observable<number> {
-    return this.http.post<number>(this.URL + '/user', userData);
+  logIn(userData: UserInterface): Observable<HttpResponse<number>> {
+    return this.http.post<number>(this.URL + '/user', userData, { observe: 'response' });
   }
 
 }
