@@ -14,22 +14,64 @@
           <h2 class="fw-bold text-white">Please log in</h2>
         </div>
 
-        <div class="card p-4 bg-opacity-75 bg-opacity-75 text-white">
+        <div>
           <form (submit)="onLogIn(); $event.preventDefault()">
             <div class="mb-3">
               <label>
                 <span>Username:</span>
-                <input [field]="loginForm.username" type="text" placeholder="Enter username" />
+                <input
+                  [field]="loginForm.username"
+                  type="text"
+                  placeholder="Enter username"
+                  class="form-control"
+                  [class.is-invalid]="
+                    loginForm.username().touched() && loginForm.username().invalid()
+                  "
+                />
+                @if(loginForm.username().touched() && loginForm.username().invalid()) { @for(error
+                of loginForm.username().errors(); track error){
+                <div class="invalid-feedback d-block">
+                  {{ error.message }}
+                </div>
+                } }
               </label>
             </div>
             <div class="mb-3">
               <label>
                 <span>Password:</span>
-                <input [field]="loginForm.password" type="password" placeholder="Enter password" />
+                <input
+                  [field]="loginForm.password"
+                  type="password"
+                  placeholder="Enter password"
+                  class="form-control"
+                  [class.is-invalid]="
+                    loginForm.password().touched() && loginForm.password().invalid()
+                  "
+                />
+                @if(loginForm.password().touched() && loginForm.password().invalid()) { @for(error
+                of loginForm.password().errors(); track error){
+                <div class="invalid-feedback d-block">
+                  {{ error.message }}
+                </div>
+                } }
               </label>
             </div>
             <div class="d-grid gap-2">
-              <button class="btn btn-primary" type="button" (click)="onLogIn()">Let's play!</button>
+              <button
+                class="btn btn-primary"
+                type="button"
+                (click)="onLogIn()"
+                [disabled]="!loginForm().valid()"
+              >
+                Let's play!
+              </button>
+
+              @if(!loginForm().valid() && (loginForm.username().touched() ||
+              loginForm.password().touched())) {
+              <small class="text-danger text-center">
+                Please fix the errors above before submitting!
+              </small>
+              }
             </div>
           </form>
         </div>
