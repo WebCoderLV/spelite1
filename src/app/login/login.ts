@@ -1,6 +1,7 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { Field, form, maxLength, minLength, required } from '@angular/forms/signals';
 import { UserInterface } from '../models/user-interface';
+import { UserService } from '../services/user-service';
 
 @Component({
   selector: 'app-login',
@@ -10,15 +11,17 @@ import { UserInterface } from '../models/user-interface';
 })
 export class Login {
 
+  userService = inject(UserService);
+
   protected readonly user = signal<UserInterface>({
-    username: '',
+    name: '',
     password: '',
   });
 
   protected readonly loginForm = form(this.user, (p) => {
-    required(p.username, { message: 'Username is required' });
-    minLength(p.username, 3, { message: 'Username must be at least 3 characters' });
-    maxLength(p.username, 25, { message: 'Username cannot exceed 25 characters' });
+    required(p.name, { message: 'Name is required' });
+    minLength(p.name, 3, { message: 'Name must be at least 3 characters' });
+    maxLength(p.name, 25, { message: 'Name cannot exceed 25 characters' });
 
     required(p.password, { message: 'Password is required' });
     minLength(p.password, 4, { message: 'Password must be at least 4 characters' });
@@ -27,7 +30,14 @@ export class Login {
 
   onLogIn() {
     if (this.loginForm().valid()) {
-      console.log('User ', this.user(), ' logged in');
+      this.userService.logIn(this.user()).subscribe({
+        next: (response) => {
+          console.log('User found:', response);
+        },
+        error: (error) => {
+          console.error('Error fetching user:', error);
+        }
+      });
     }
   }
 

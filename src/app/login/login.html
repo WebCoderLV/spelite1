@@ -20,16 +20,14 @@
               <label>
                 <span>Username:</span>
                 <input
-                  [field]="loginForm.username"
+                  [field]="loginForm.name"
                   type="text"
-                  placeholder="Enter username"
+                  placeholder="Enter name"
                   class="form-control"
-                  [class.is-invalid]="
-                    loginForm.username().touched() && loginForm.username().invalid()
-                  "
+                  [class.is-invalid]="loginForm.name().touched() && loginForm.name().invalid()"
                 />
-                @if(loginForm.username().touched() && loginForm.username().invalid()) { @for(error
-                of loginForm.username().errors(); track $index){
+                @if(loginForm.name().touched() && loginForm.name().invalid()) { @for(error of
+                loginForm.name().errors(); track $index){
                 <div class="invalid-feedback d-block">
                   {{ error.message }}
                 </div>
@@ -66,7 +64,7 @@
                 Let's play!
               </button>
 
-              @if(!loginForm().valid() && (loginForm.username().touched() ||
+              @if(!loginForm().valid() && (loginForm.name().touched() ||
               loginForm.password().touched())) {
               <small class="text-danger text-center">
                 Please fix the errors above before submitting!
