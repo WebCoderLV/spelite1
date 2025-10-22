@@ -1,104 +1,47 @@
-import { Component, inject, signal, computed, effect } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators
-} from '@angular/forms';
+import { Component, computed, inject, signal } from '@angular/core';
+import { Field, form, maxLength, minLength, required } from '@angular/forms/signals';
 import { UserInterface } from '../models/user-interface';
 import { UserService } from '../services/user-service';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule],
+  imports: [Field],
   templateUrl: './login.html',
-  styleUrl: './login.css',
+  styleUrls: ['./login.css']
 })
 export class Login {
-  fb = inject(FormBuilder);
+
   userService = inject(UserService);
 
-  // Signals for reactive state management
-  user = signal<UserInterface>({
-    username: '',
+  protected readonly user = signal<UserInterface>({
+    name: '',
     password: '',
   });
 
-  signUpResult = signal<{ success: boolean; message: string }>({
-    success: false,
-    message: ''
+  protected readonly loginForm = form(this.user, (p) => {
+    required(p.name, { message: 'Name is required' });
+    minLength(p.name, 3, { message: 'Name must be at least 3 characters' });
+    maxLength(p.name, 25, { message: 'Name cannot exceed 25 characters' });
+
+    required(p.password, { message: 'Password is required' });
+    minLength(p.password, 4, { message: 'Password must be at least 4 characters' });
+    maxLength(p.password, 50, { message: 'Password cannot exceed 50 characters' });
   });
 
-  loginForm: FormGroup = this.fb.group({
-    username: ['',
-      {
-        validators: [Validators.required, Validators.minLength(2), Validators.pattern('^[A-Z]\\S*$')],
-        asyncValidators: [this.userService.validateUserExists()],
-        updateOn: 'blur'
-      }
-    ],
-    password: ['', [Validators.required, this.userService.passwordValidator]],
-  });
-
-  // Convert form observables to signals
-  formStatus = toSignal(this.loginForm.statusChanges, { initialValue: this.loginForm.status });
-  formValue = toSignal(this.loginForm.valueChanges, { initialValue: this.loginForm.value });
-
-  // Computed signals that automatically react to form changes
-  formValid = computed(() => {
-    // This will automatically react when formStatus() or formValue() changes
-    this.formStatus(); // Access the signal to create dependency
-    this.formValue();
-
-    const usernameControl = this.loginForm.get('username');
-    const passwordControl = this.loginForm.get('password');
-    const isUsernameValid = usernameControl?.hasError('required') === false &&
-      usernameControl?.hasError('minlength') === false &&
-      usernameControl?.hasError('pattern') === false;
-    const isPasswordValid = passwordControl?.valid === true;
-
-    return isUsernameValid && isPasswordValid;
-  });
-
-  userExists = computed(() => {
-    // This will automatically react when formStatus() or formValue() changes
-    this.formStatus();
-    this.formValue();
-
-    const usernameControl = this.loginForm.get('username');
-    const isUsernameValid = usernameControl?.hasError('required') === false &&
-      usernameControl?.hasError('minlength') === false &&
-      usernameControl?.hasError('pattern') === false;
-
-    if (usernameControl?.pending) {
-      return null;
-    } else if (usernameControl?.errors?.['userNotFound']) {
-      return false;
-    } else if (isUsernameValid && usernameControl?.value) {
-      return true;
-    } else {
-      return null;
-    }
-  });
-
-  isSignUpEnabled = computed(() => {
-    return this.formValid() && this.userExists() === false && !this.signUpResult().success;
-  });
-
-  isLoginEnabled = computed(() => {
-    return this.formValid() && (this.userExists() === true || this.signUpResult().success);
-  });
+  protected loginForms = computed(() => this.loginForm());
 
   onLogIn() {
-    const rawValue = this.loginForm.getRawValue();
-    this.user.set({ ...rawValue });
-    console.log('User ', this.user(), ' logged in');
+    if (this.loginForm().valid()) {
+      this.userService.logIn(this.user()).subscribe({
+        next: (response) => {
+          this.user.update(() => ({ ...this.user(), id: response.body! }));
+          console.log("User " + JSON.stringify(this.user()) + " Status: " + response.status);
+        },
+        error: (error) => {
+          console.error('Error fetching user:', error);
+        }
+      });
+    }
   }
 
-  async onSignUp() {
-    const rawValue = this.loginForm.getRawValue();
-    const result = await this.userService.onSignUp(rawValue.username, rawValue.password);
-    this.signUpResult.set(result);
-  }
 }

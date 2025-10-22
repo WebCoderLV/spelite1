@@ -14,144 +14,60 @@
           <h2 class="fw-bold text-white">Please log in</h2>
         </div>
 
-        <form [formGroup]="loginForm">
-          <!-- Form Fields Row -->
-          <div class="row">
-            <div class="col-md-6">
-              <div class="form-floating mb-3 mt-3">
-                <input
-                  id="username"
-                  formControlName="username"
-                  type="text"
-                  class="form-control"
-                  placeholder="Username"
-                />
-                <label for="username">Username:</label>
+        <div>
+          <form (submit)="onLogIn(); $event.preventDefault()">
+            <div class="form-floating mb-3">
+              <input
+                class="form-control"
+                id="floatingUser"
+                [field]="loginForm.name"
+                type="text"
+                placeholder="Enter name"
+              />
+              @if((loginForm.name().touched() && loginForm.name().dirty()) &&
+              loginForm.name().invalid()) { @for(error of loginForm.name().errors(); track $index){
+              <div class="invalid-feedback d-block">
+                {{ error.message }}
               </div>
-              @if (loginForm.get('username')?.invalid && loginForm.get('username')?.touched) { @if
-              (loginForm.get('username')?.errors?.['required']) {
-              <small class="text-white bg-dark">Please enter username</small>
-              } @if (loginForm.get('username')?.errors?.['minlength']) {
-              <small class="text-white bg-dark">Username must be at least 2 characters</small>
-              } @if (loginForm.get('username')?.errors?.['pattern']) {
-              <small class="text-white bg-dark"
-                >Username must start with a capital letter and contain no spaces</small
-              >
-              }
-              <!-- @if (loginForm.get('username')?.errors?.['userNotFound']) {
-              <small class="text-white bg-dark">
-                {{ loginForm.get('username')?.errors?.['userNotFound']?.message }}
-              </small>
-              }  -->
-              } @if (loginForm.get('username')?.pending) {
-              <small class="text-white bg-dark">
-                <span class="spinner-border spinner-border-sm me-1" role="status"></span>
-                Checking user...
-              </small>
-              }
-            </div>
-            <div class="col-md-6">
-              <div class="form-floating mb-3 mt-3">
-                <input
-                  id="password"
-                  formControlName="password"
-                  type="password"
-                  class="form-control"
-                  placeholder="Password"
-                />
-                <label for="password">Password:</label>
-              </div>
-              @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) { @if
-              (loginForm.get('password')?.errors?.['required']) {
-              <small class="text-white bg-dark">Password is required</small>
-              } @if (loginForm.get('password')?.errors?.['length']) {
-              <small
-                class="text-white bg-dark"
-                >{{ loginForm.get('password')?.errors?.['length']?.message }}</small
-              >
-              } @if (loginForm.get('password')?.errors?.['specialChar']) {
-              <small
-                class="text-white bg-dark"
-                >{{ loginForm.get('password')?.errors?.['specialChar']?.message }}</small
-              >
-              } @if (loginForm.get('password')?.errors?.['capitalLetter']) {
-              <small
-                class="text-white bg-dark"
-                >{{ loginForm.get('password')?.errors?.['capitalLetter']?.message }}</small
-              >
               } }
+              <label for="floatingUser">Username:</label>
             </div>
-          </div>
-
-          <!-- Requirements Row -->
-          <div class="row row-cols-1 row-cols-md-2">
-            <div class="col mb-3">
-              <div
-                class="alert alert-success border-start border-success border-4 h-100 d-flex flex-column"
-              >
-                <div class="spinner-grow text-success"></div>
-                <div class="fw-bold mb-2 text-success-emphasis">Username Requirements:</div>
-                <ol class="mb-0 ps-3 small text-muted flex-grow-1">
-                  <li>Must be at least 2 characters long</li>
-                  <li>Must start with a capital letter</li>
-                  <li>Cannot contain spaces or whitespace characters</li>
-                </ol>
+            <div class="form-floating mb-3">
+              <input
+                class="form-control"
+                id="floatingPassword"
+                [field]="loginForm.password"
+                type="password"
+                placeholder="Enter password"
+              />
+              @if((loginForm.password().touched() && loginForm.password().dirty()) &&
+              loginForm.password().invalid()) { @for(error of loginForm.password().errors(); track
+              $index){
+              <div class="invalid-feedback d-block">
+                {{ error.message }}
               </div>
+              } }
+              <label for="floatingPassword"> Password:</label>
             </div>
-            <div class="col mb-3">
-              <div
-                class="alert alert-info border-start border-info border-4 h-100 d-flex flex-column"
-              >
-                <div class="spinner-grow text-info"></div>
-                <div class="fw-bold mb-2 text-info-emphasis">Password Requirements:</div>
-                <ol class="mb-0 ps-3 small text-muted flex-grow-1">
-                  <li>Must be 4 to 8 characters long</li>
-                  <li>Must contain at least one special character</li>
-                  <li>Must contain one capital letter, but not as the first character</li>
-                </ol>
-              </div>
-            </div>
-          </div>
-
-          <!-- Sign Up Result Message -->
-          @if (signUpResult().message) {
-          <div class="row mb-3">
-            <div class="col-12">
-              <div
-                class="alert"
-                [class]="signUpResult().success ? 'alert-success' : 'alert-danger'"
-              >
-                {{ signUpResult().message }}
-              </div>
-            </div>
-          </div>
-          }
-
-          <!-- Buttons Row -->
-          <div class="row justify-content-center align-items-end">
-            <div class="col-md-6 mb-3">
+            <div class="d-grid gap-2">
               <button
-                class="btn btn-primary w-100 py-3"
+                class="btn btn-primary"
                 type="button"
                 (click)="onLogIn()"
-                [disabled]="!isLoginEnabled()"
+                [disabled]="!loginForm().valid()"
               >
-                Log in
+                Let's play!
               </button>
+
+              @if(!loginForm().valid() && loginForm.name().touched() &&
+              loginForm.password().touched()) {
+              <small class="text-danger text-center">
+                Please fix the errors above before submitting!
+              </small>
+              }
             </div>
-            <div class="col-md-6 mb-3">
-              <p class="text-muted small mb-2 text-center">Don't have an account?</p>
-              <button
-                class="btn btn-success w-100 py-3"
-                type="button"
-                (click)="onSignUp()"
-                [disabled]="!isSignUpEnabled()"
-              >
-                Sign up
-              </button>
-            </div>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   </div>
