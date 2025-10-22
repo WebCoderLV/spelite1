@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { Field, form, maxLength, minLength, required } from '@angular/forms/signals';
 import { UserInterface } from '../models/user-interface';
 import { UserService } from '../services/user-service';
@@ -27,6 +27,8 @@ export class Login {
     minLength(p.password, 4, { message: 'Password must be at least 4 characters' });
     maxLength(p.password, 50, { message: 'Password cannot exceed 50 characters' });
   });
+
+  protected loginForms = computed(() => this.loginForm());
 
   onLogIn() {
     if (this.loginForm().valid()) {
