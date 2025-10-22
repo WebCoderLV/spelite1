@@ -2,6 +2,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { Field, form, maxLength, minLength, required } from '@angular/forms/signals';
 import { UserInterface } from '../models/user-interface';
 import { UserService } from '../services/user-service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -12,6 +13,7 @@ import { UserService } from '../services/user-service';
 export class Login {
 
   userService = inject(UserService);
+  router = inject(Router);
 
   protected readonly user = signal<UserInterface>({
     name: '',
@@ -28,14 +30,14 @@ export class Login {
     maxLength(p.password, 50, { message: 'Password cannot exceed 50 characters' });
   });
 
-  protected loginForms = computed(() => this.loginForm());
+  // protected loginForms = computed(() => this.loginForm());
 
   onLogIn() {
     if (this.loginForm().valid()) {
       this.userService.logIn(this.user()).subscribe({
         next: (response) => {
           this.user.update(() => ({ ...this.user(), id: response.body! }));
-          console.log("User " + JSON.stringify(this.user()) + " Status: " + response.status);
+          this.router.navigate(['/main']);
         },
         error: (error) => {
           console.error('Error fetching user:', error);
