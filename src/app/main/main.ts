@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 
 @Component({
   selector: 'app-main',
@@ -7,5 +7,4 @@ import { Component } from '@angular/core';
   styleUrl: './main.css'
 })
 export class Main {
-
 }

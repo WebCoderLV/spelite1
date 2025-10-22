@@ -14,7 +14,7 @@ export class UserService {
   logIn(userData: UserInterface): Observable<HttpResponse<number>> {
     return this.http.post<number>(this.URL + '/user', userData, {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
-      observe: 'response'
+      observe: 'response',
     });
   }
 
