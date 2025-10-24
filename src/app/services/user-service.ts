@@ -18,4 +18,11 @@ export class UserService {
     });
   }
 
+  deleteAccount(userId: number): Observable<HttpResponse<void>> {
+    return this.http.delete<void>(`${this.URL}/user/${userId}`, {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      observe: 'response'
+    });
+  }
+
 }

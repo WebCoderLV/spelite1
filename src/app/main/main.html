@@ -1,1 +1,66 @@
-<p>main works!</p>
+<app-header (rules)="onRules($event)" />
+<div class="container-fluid mt-3">
+  <form class="row gx-5" (submit)="onSubmit(); $event.preventDefault()">
+    <div class="col-sm-4 text-start">
+      <div [innerHTML]="rules" [hidden]="gameRules()"></div>
+    </div>
+    <div class="col-sm-1">
+      <input
+        class="form-control"
+        [field]="gameForm.number1"
+        type="number"
+        id="number1"
+        maxlength="1"
+      />
+      <br />
+      <label for="number1">1</label>
+    </div>
+    <div class="col-sm-1">
+      <input
+        class="form-control"
+        [field]="gameForm.number2"
+        type="number"
+        id="number2"
+        maxlength="1"
+      />
+      <br />
+      <label for="number2">2</label>
+    </div>
+    <div class="col-sm-1">
+      <input
+        class="form-control"
+        [field]="gameForm.number3"
+        type="number"
+        id="number3"
+        maxlength="1"
+      />
+      <br />
+      <label for="number3">3</label>
+    </div>
+    <div class="col-sm-1">
+      <input
+        class="form-control"
+        [field]="gameForm.number4"
+        type="number"
+        id="number4"
+        maxlength="1"
+      />
+      <br />
+      <label for="number4">4</label>
+    </div>
+    <div class="col-sm-2 text-start">
+      <button class="btn btn-primary mt-4" type="submit" [disabled]="!gameForm().valid()">
+        Iesniegt
+      </button>
+    </div>
+    <div class="col-sm-2 text-start">
+      <h3>Rezultāts:</h3>
+      <ol>
+        <li>Rezultāts</li>
+        <li>Rezultāts</li>
+        <li>Rezultāts</li>
+        <li>Rezultāts</li>
+      </ol>
+    </div>
+  </form>
+</div>

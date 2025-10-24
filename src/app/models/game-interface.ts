@@ -1,7 +1,8 @@
 export interface GameInterface {
-    dBid: number;
-    guessNumber1: number;
-    guessNumber2: number;
-    guessNumber3: number;
-    guessNumber4: number;
+    id?: number;
+    userId?: number;
+    number1: number;
+    number2: number;
+    number3: number;
+    number4: number;
 }

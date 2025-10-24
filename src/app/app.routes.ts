@@ -6,6 +6,6 @@ import { NotFound } from './not-found/not-found';
 export const routes: Routes = [
     { path: '', redirectTo: '/login', pathMatch: 'full' },
     { path: 'login', component: Login, title: 'Login' },
-    { path: 'main', component: Main, title: 'Play Game' },
+    { path: 'main', component: Main, title: 'Play The Game!' },
     { path: '**', component: NotFound, title: 'Not Found' }
 ];
