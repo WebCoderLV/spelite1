@@ -4,5 +4,5 @@ import { Injectable, signal } from "@angular/core";
     providedIn: 'root'
 })
 export class UserLoginGlobalSignal {
-    public userLogedIn = signal<boolean>(false);
+    public logedIn = signal<boolean>(false);
 }

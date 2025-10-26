@@ -1,9 +1,11 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, output } from '@angular/core';
 import { Field, form, maxLength, minLength, required } from '@angular/forms/signals';
 import { Router } from '@angular/router';
+import { takeUntil } from 'rxjs/operators';
 import { UserService } from '../services/user-service';
-import { UserGlobalSignal } from '../services/userGlobalSignal';
-import { UserLoginGlobalSignal } from '../services/userLoginGlobalSignal';
+import { UserGlobalSignal } from '../models/user -global-signal';
+import { UserLoginGlobalSignal } from '../models/login-global-signal';
+import { BaseComponent } from '../shared/base-component';
 
 @Component({
   selector: 'app-login',
@@ -11,7 +13,7 @@ import { UserLoginGlobalSignal } from '../services/userLoginGlobalSignal';
   templateUrl: './login.html',
   styleUrls: ['./login.css']
 })
-export class Login {
+export class Login extends BaseComponent {
 
   userService = inject(UserService);
   router = inject(Router);
@@ -30,16 +32,18 @@ export class Login {
 
   onLogIn() {
     if (this.loginForm().valid()) {
-      this.userService.logIn(this.user()).subscribe({
-        next: (response) => {
-          this.user.update(() => ({ ...this.user(), id: response.body! }));
-          this.userLoginGlobalSignal.userLogedIn.set(true);
-          this.router.navigate(['/main']);
-        },
-        error: (error) => {
-          console.error('Error fetching user:', error);
-        }
-      });
+      this.userService.logIn(this.user)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (response) => {
+            this.user.update(() => ({ ...this.user(), id: response.body! }));
+            this.userLoginGlobalSignal.logedIn.set(true);
+            this.router.navigate(['/main']);
+          },
+          error: (error) => {
+            console.error('Error fetching user:', error);
+          }
+        });
     }
   }
 

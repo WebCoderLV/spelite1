@@ -1,0 +1,10 @@
+// import { Injectable, signal } from '@angular/core';
+
+// @Injectable({
+//   providedIn: 'root'
+// })
+// export class GameIdGlobalSignal {
+
+//   public gameId = signal<number>(0);
+
+// }

@@ -1,66 +1,74 @@
-<app-header (rules)="onRules($event)" />
+@if (userLoginGlobalSignal.logedIn()) {
+<app-header (rules)="onRules($event)" (newGame)="resetGame($event)" />
 <div class="container-fluid mt-3">
-  <form class="row gx-5" (submit)="onSubmit(); $event.preventDefault()">
+  <div class="row">
     <div class="col-sm-4 text-start">
       <div [innerHTML]="rules" [hidden]="gameRules()"></div>
     </div>
-    <div class="col-sm-1">
-      <input
-        class="form-control"
-        [field]="gameForm.number1"
-        type="number"
-        id="number1"
-        maxlength="1"
-      />
-      <br />
-      <label for="number1">1</label>
-    </div>
-    <div class="col-sm-1">
-      <input
-        class="form-control"
-        [field]="gameForm.number2"
-        type="number"
-        id="number2"
-        maxlength="1"
-      />
-      <br />
-      <label for="number2">2</label>
-    </div>
-    <div class="col-sm-1">
-      <input
-        class="form-control"
-        [field]="gameForm.number3"
-        type="number"
-        id="number3"
-        maxlength="1"
-      />
-      <br />
-      <label for="number3">3</label>
-    </div>
-    <div class="col-sm-1">
-      <input
-        class="form-control"
-        [field]="gameForm.number4"
-        type="number"
-        id="number4"
-        maxlength="1"
-      />
-      <br />
-      <label for="number4">4</label>
-    </div>
-    <div class="col-sm-2 text-start">
-      <button class="btn btn-primary mt-4" type="submit" [disabled]="!gameForm().valid()">
-        Iesniegt
-      </button>
-    </div>
-    <div class="col-sm-2 text-start">
+    <form (submit)="onSubmit(); $event.preventDefault()" class="col-sm-5">
+      <div class="row">
+        <div class="col-sm-3">
+          <label for="number1"><strong>1.</strong></label>
+          <input
+            class="form-control"
+            [value]="gameGlobalSignal.game().number1 === 0 ? '' : gameGlobalSignal.game().number1"
+            (input)="updateNumber1(+$event.target.value)"
+            type="number"
+            id="number1"
+          />
+        </div>
+        <div class="col-sm-3">
+          <label for="number2"><strong>2.</strong></label>
+          <input
+            class="form-control"
+            [value]="gameGlobalSignal.game().number2 === 0 ? '' : gameGlobalSignal.game().number2"
+            (input)="updateNumber2(+$event.target.value)"
+            type="number"
+            id="number2"
+          />
+        </div>
+        <div class="col-sm-3">
+          <label for="number3"><strong>3.</strong></label>
+          <input
+            class="form-control"
+            [value]="gameGlobalSignal.game().number3 === 0 ? '' : gameGlobalSignal.game().number3"
+            (input)="updateNumber3(+$event.target.value)"
+            type="number"
+            id="number3"
+          />
+        </div>
+        <div class="col-sm-3">
+          <label for="number4"><strong>4.</strong></label>
+          <input
+            class="form-control"
+            [value]="gameGlobalSignal.game().number4 === 0 ? '' : gameGlobalSignal.game().number4"
+            (input)="updateNumber4(+$event.target.value)"
+            type="number"
+            id="number4"
+          />
+        </div>
+        <div class="col-sm-12 text-center mt-3">
+          <button class="btn btn-primary" type="submit" [disabled]="!gameForm().valid()">
+            Iesniegt
+          </button>
+        </div>
+      </div>
+    </form>
+    <div class="col-sm-3 text-start">
       <h3>Rezultāts:</h3>
       <ol>
-        <li>Rezultāts</li>
-        <li>Rezultāts</li>
-        <li>Rezultāts</li>
-        <li>Rezultāts</li>
+        @for (attempt of gameAttempts(); track $index) {
+        <li>
+          Skaitļi: {{ attempt.inputNumbers[0] }}, {{ attempt.inputNumbers[1] }},
+          {{ attempt.inputNumbers[2] }}, {{ attempt.inputNumbers[3] }} → Polšiņi:
+          {{ attempt.result.p }}, Aliņi: {{ attempt.result.a }}
+          @if (attempt.result.win) {
+          <strong> (UZVARA!)</strong>
+          }
+        </li>
+        }
       </ol>
     </div>
-  </form>
+  </div>
 </div>
+}

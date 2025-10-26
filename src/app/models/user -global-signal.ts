@@ -1,5 +1,5 @@
 import { Injectable, signal } from "@angular/core";
-import { UserInterface } from "../models/user-interface";
+import { UserInterface } from './user-interface';
 
 @Injectable({
     providedIn: 'root'
@@ -7,7 +7,6 @@ import { UserInterface } from "../models/user-interface";
 export class UserGlobalSignal {
 
     public user = signal<UserInterface>({
-        id: null,
         name: '',
         password: '',
     });
