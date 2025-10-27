@@ -11,10 +11,9 @@ import { BaseComponent } from '../shared/base-component';
   selector: 'app-login',
   imports: [Field],
   templateUrl: './login.html',
-  styleUrls: ['./login.css']
+  styleUrls: ['./login.css'],
 })
 export class Login extends BaseComponent {
-
   userService = inject(UserService);
   router = inject(Router);
   user = inject(UserGlobalSignal).user;
@@ -32,7 +31,8 @@ export class Login extends BaseComponent {
 
   onLogIn() {
     if (this.loginForm().valid()) {
-      this.userService.logIn(this.user)
+      const loginSubscription = this.userService
+        .logIn(this.user)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: (response) => {
@@ -42,9 +42,8 @@ export class Login extends BaseComponent {
           },
           error: (error) => {
             console.error('Error fetching user:', error);
-          }
+          },
         });
     }
   }
-
 }
