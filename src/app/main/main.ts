@@ -1,26 +1,14 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { form, max, min, required } from '@angular/forms/signals';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil } from 'rxjs';
 import { HTML_CONSTANTS } from '../../../public/rules';
 import { Header } from '../header/header';
 import { GameGlobalSignal } from '../models/game-global-signal';
+import { GameAttempt, GameResult } from '../models/game-interfaces';
 import { UserLoginGlobalSignal } from '../models/login-global-signal';
 import { UserGlobalSignal } from '../models/user -global-signal';
 import { GameService } from '../services/game-service';
-import { ResultsGlobalSignal } from '../models/results-global-signal';
 import { BaseComponent } from '../shared/base-component';
-
-interface GameResult {
-  gameId: number;
-  p: number;
-  a: number;
-  win: boolean;
-}
-
-interface GameAttempt {
-  result: GameResult;
-  inputNumbers: number[];
-}
 
 @Component({
   selector: 'app-main',
@@ -29,48 +17,49 @@ interface GameAttempt {
   styleUrl: './main.css'
 })
 export class Main extends BaseComponent implements OnInit {
-  rules = HTML_CONSTANTS.gameRules;
+  readonly rules = HTML_CONSTANTS.gameRules;
 
-  gameService = inject(GameService);
+  private readonly gameService = inject(GameService);
+  readonly userLoginGlobalSignal = inject(UserLoginGlobalSignal);
+  readonly gameGlobalSignal = inject(GameGlobalSignal);
+  private readonly userGlobalSignal = inject(UserGlobalSignal).user;
 
-  gameRules = signal<boolean>(true);
-
-  userLoginGlobalSignal = inject(UserLoginGlobalSignal);
-  gameGlobalSignal = inject(GameGlobalSignal);
-  userGlobalSignal = inject(UserGlobalSignal).user;
-  result = inject(ResultsGlobalSignal);
-  gameAttempts = signal<GameAttempt[]>([]);
+  readonly gameRules = signal<boolean>(true);
+  readonly gameAttempts = signal<GameAttempt[]>([]);
 
   ngOnInit(): void {
-    this.gameService.startGame(this.userGlobalSignal().id!)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (response) => {
-          this.gameGlobalSignal.game.update(() => ({ ...this.gameGlobalSignal.game(), id: response.body! }));
-        },
-        error: (error) => {
-          console.error('Error initializing game:', error);
-        }
-      });
+    const userId = this.userGlobalSignal().id;
+    if (userId) {
+      this.gameService.startGame(userId)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (response) => {
+            if (response.body) {
+              this.gameGlobalSignal.game.update(game => ({ ...game, id: response.body! }));
+            }
+          },
+          error: (error) => console.error('Error initializing game:', error)
+        });
+    }
   }
 
-  onRules(rules: boolean) {
+  onRules(rules: boolean): void {
     this.gameRules.set(rules);
   }
 
-  updateNumber1(value: number) {
+  updateNumber1(value: number): void {
     this.gameGlobalSignal.game.update(model => ({ ...model, number1: value }));
   }
 
-  updateNumber2(value: number) {
+  updateNumber2(value: number): void {
     this.gameGlobalSignal.game.update(model => ({ ...model, number2: value }));
   }
 
-  updateNumber3(value: number) {
+  updateNumber3(value: number): void {
     this.gameGlobalSignal.game.update(model => ({ ...model, number3: value }));
   }
 
-  updateNumber4(value: number) {
+  updateNumber4(value: number): void {
     this.gameGlobalSignal.game.update(model => ({ ...model, number4: value }));
   }
 
@@ -92,16 +81,17 @@ export class Main extends BaseComponent implements OnInit {
     max(path.number4, 9, { message: 'Number 4 must be a single digit (1-9)' });
   });
 
-  resetGame(newGame: boolean) {
+  resetGame(newGame: boolean): void {
     if (newGame) {
       this.gameAttempts.set([]);
     }
   }
 
-  onSubmit() {
+  onSubmit(): void {
     const { number1, number2, number3, number4 } = this.gameGlobalSignal.game();
-    const numbers: number[] = [number1, number2, number3, number4].filter(n => n !== 0);
-    const hasUniqueNumbers: boolean = numbers.length === new Set(numbers).size;
+    const numbers = [number1, number2, number3, number4].filter(n => n !== 0);
+    const hasUniqueNumbers = numbers.length === new Set(numbers).size;
+
     if (this.gameForm().valid() && hasUniqueNumbers) {
       this.gameService.checkGame(this.gameGlobalSignal.game())
         .pipe(takeUntil(this.destroy$))
@@ -113,9 +103,7 @@ export class Main extends BaseComponent implements OnInit {
               this.gameAttempts.update(attempts => [...attempts, { result, inputNumbers }]);
             }
           },
-          error: (error) => {
-            console.error('Error checking game:', error);
-          }
+          error: (error) => console.error('Error checking game:', error)
         });
     } else {
       alert(hasUniqueNumbers ? 'Please fill all fields correctly!' : 'All numbers must be different!');

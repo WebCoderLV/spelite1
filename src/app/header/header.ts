@@ -1,5 +1,5 @@
 import { Component, inject, output } from '@angular/core';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil } from 'rxjs';
 import { UserGlobalSignal } from '../models/user -global-signal';
 import { UserService } from '../services/user-service';
 import { Router } from '@angular/router';
@@ -35,6 +35,7 @@ export class Header extends BaseComponent {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
+          this.newGame.emit(true);
           this.user.set({ id: 0, name: '', password: '' });
           this.userLoginGlobalSignal.logedIn.set(false);
           this.gameGlobalSignal.game.set({ id: null, number1: 0, number2: 0, number3: 0, number4: 0 });
@@ -61,6 +62,7 @@ export class Header extends BaseComponent {
   }
 
   exitGame() {
+    this.newGame.emit(true);
     this.user.set({ id: 0, name: '', password: '' });
     this.gameGlobalSignal.game.set({ id: 0, number1: 0, number2: 0, number3: 0, number4: 0 });
     this.userLoginGlobalSignal.logedIn.set(false);

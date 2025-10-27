@@ -2,10 +2,11 @@ import { Component, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 
 @Component({
-    template: ''
+    template: '',
+    standalone: true
 })
 export abstract class BaseComponent implements OnDestroy {
-    protected destroy$ = new Subject<void>();
+    protected readonly destroy$ = new Subject<void>();
 
     ngOnDestroy(): void {
         this.destroy$.next();

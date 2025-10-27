@@ -1,11 +1,20 @@
 import { Routes } from '@angular/router';
-import { Main } from './main/main';
-import { Login } from './login/login';
-import { NotFound } from './not-found/not-found';
 
 export const routes: Routes = [
     { path: '', redirectTo: '/login', pathMatch: 'full' },
-    { path: 'login', component: Login, title: 'Login' },
-    { path: 'main', component: Main, title: 'Play The Game!' },
-    { path: '**', component: NotFound, title: 'Not Found' }
+    {
+        path: 'login',
+        loadComponent: () => import('./login/login').then(m => m.Login),
+        title: 'Login'
+    },
+    {
+        path: 'main',
+        loadComponent: () => import('./main/main').then(m => m.Main),
+        title: 'Play The Game!'
+    },
+    {
+        path: '**',
+        loadComponent: () => import('./not-found/not-found').then(m => m.NotFound),
+        title: 'Not Found'
+    }
 ];

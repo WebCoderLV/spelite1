@@ -1,10 +1,10 @@
-import { Component, inject, output } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Field, form, maxLength, minLength, required } from '@angular/forms/signals';
 import { Router } from '@angular/router';
-import { takeUntil } from 'rxjs/operators';
-import { UserService } from '../services/user-service';
-import { UserGlobalSignal } from '../models/user -global-signal';
+import { takeUntil } from 'rxjs';
 import { UserLoginGlobalSignal } from '../models/login-global-signal';
+import { UserGlobalSignal } from '../models/user -global-signal';
+import { UserService } from '../services/user-service';
 import { BaseComponent } from '../shared/base-component';
 
 @Component({
